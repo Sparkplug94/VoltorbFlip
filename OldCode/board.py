@@ -1,5 +1,5 @@
 import numpy as np
-from boardClasses import *
+from OldCode.boardClasses import *
 
 def prettyPrint(map):
     totalLen = 5
@@ -24,11 +24,11 @@ rowVoltorbs = stats[1]
 colVoltorbs = stats[3]
 
 #load data into game board
-# tmp = np.asarray([['X', 'X', 'X', 'X', 'X'],
-#                   ['X', 'X', 'X', 'X', 'X'],
-#                   ['X', 'X', 'X', 'X', 'X'],
-#                   ['X', 'X', 'X', 'X', 'X'],
-                    ['X', 'X', 'X', 'X', 'X']],dtype=np.dtype('U100'))
+tmp = np.asarray([['X', 'X', 'X', 'X', 'X'],
+                  ['X', 'X', 'X', 'X', 'X'],
+                  ['X', 'X', 'X', 'X', 'X'],
+                  ['X', 'X', 'X', 'X', 'X'],
+                  ['X', 'X', 'X', 'X', 'X']],dtype=np.dtype('U100'))
 
 
 # tmp = np.asarray([['X', 'X', 'X', 'X', 'X'],

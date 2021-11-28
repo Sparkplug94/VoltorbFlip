@@ -217,7 +217,6 @@ def newCharEq(labels, stats):  # updates the characteristic sum with known infor
                     charCol[j] = charCol[j] - 2
     return charRow, charCol
 
-
 def revealElem(game, labels, i,j): #label the i,jth element of the label board according to the game board
     val = int(game.map[i,j])
     labels.choose(str(val),i,j)
@@ -242,7 +241,6 @@ def charSumCheck(stats, labels): #check characteristic sum of
             labels.elim('row', i)
         if cases == [(1,0)]:#if there can only be a 2 tile in the row, mark it as such
             labels.updateRow('3', i)
-
     print('Characteristic Sum of Columns: ' + str(charCol))
     for i, val in enumerate(charCol):
         cases = possibilities(val)
