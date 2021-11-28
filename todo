@@ -1,0 +1,5 @@
+To Do:
+Optimize OCR - convolve against random single well-chosen kernel, the number I get for each digit is unique - 1 convolution instead of 10
+Improve automatic playing algorithm -- take into account possibilities for each row given the sum (can do parity checks on sums because of even vs. odd sums)
+Parity Checks can improve FoM algorithm (2 tiles and 3 tiles have different parity - odd or even
+
