@@ -2,9 +2,9 @@ import numpy as np
 
 #define constants for board generation
 #probabilities chosen to have average of 25 points, with 12 voltorbs per board.
-probV = 0.48 #probability of voltorb tile
-prob3 = 0.08 #probability of three tile
-prob2 = 0.32 #probability of two tile
+probV = 0.40 #probability of voltorb tile
+prob3 = 0.12 #probability of three tile
+prob2 = 0.28 #probability of two tile
 
 class gameBoard: #voltorb flip board class, generates a full game of voltorb flip
 
@@ -255,13 +255,21 @@ class gameBoard: #voltorb flip board class, generates a full game of voltorb fli
         self.map = np.load(name+'.npy')
         self.calcstats()
 
-    def prettyPrint(self): #print the board to console in an aesthetically pleasing way
-        print('\n'.join(['\t'.join([str(int(cell)) for cell in row]) for row in self.map]))
-
+    # def prettyPrint(self): #print the board to console in an aesthetically pleasing way
+    #     print('\n'.join(['\t'.join([str(int(cell)) for cell in row]) for row in self.map]))
+    def prettyPrint(self): #print the label board in an aesthetically pleasing way
+        totalLen = 5
+        for row in self.map:
+            printline = ''
+            for elem in row:
+                printline = printline+str(int(elem))
+                for k in range(0,totalLen-len(str(int(elem)))):
+                    printline = printline + ' '
+            print(printline)
 
 class labelBoard: #class for containing possible values of gameBoard. tiles contain some subset of '0','1','2','3' stored in a string
 
-    def __init__(self):
+    def __init__(self): #optionally inherit another label board
         self.map = np.empty((5, 5), dtype=np.dtype('U100'))
         self.map[:] = '0123' #in each tile, put all possible values in a string
 
@@ -387,7 +395,7 @@ def reveal(game, labels, rowOrCol, num): #shorthand for revealing entire row or 
         for i in range(0,5):
             revealElem(game, labels,i,num)
 
-#THIS METHOD SHOULD BE USED IF THE BOAD IS NOT KNOWN TO THE COMPUTER (uses only the board stats, not the board itself)
+#THIS METHOD SHOULD BE USED IF THE TRUE BOARD IS NOT KNOWN TO THE COMPUTER (uses only the board stats, not the board itself)
 def charSumCheck(stats, labels): #check characteristic sum of rows and columns. If
     charRow, charCol = newCharEq(labels, stats) #calculate characteristic sum of rows and columns, including all known information
     for i, val in enumerate(charRow): #for each row
