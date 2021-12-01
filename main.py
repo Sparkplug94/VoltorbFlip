@@ -15,7 +15,6 @@ def prettyPrint(map):
                 printline = printline + ' '
         print(printline)
 
-
 def playVoltorbFlip(): #play a game of voltorb flip, using the algorithm, and return success or failure
     successFlag = 0 #set successflag
     game = gameBoard() #create random gameboard
@@ -31,6 +30,7 @@ def playVoltorbFlip(): #play a game of voltorb flip, using the algorithm, and re
         if completeFlag: #if it's complete, set successFlag to 1
             successFlag = 1
             break
+        # fom, _, _, naive = FOMProbabilistic(game, labels) #construct figure of merit matrix
         fom = FOM(game, labels) #construct figure of merit matrix
         fomMax = np.max(np.max(fom)) #find maximum figure of merit
         idxs = zip(*np.where(fom == fomMax)) #find indices of maximum figure of merits on board (can be multiple)
@@ -43,9 +43,15 @@ def playVoltorbFlip(): #play a game of voltorb flip, using the algorithm, and re
     return successFlag
 
 successes = []
-trials = 1000
+trials = 300
 for i in range(0,trials): #run X trials
-    successes.append(playVoltorbFlip())
+    print('Trial '+str(i))
+    flag = playVoltorbFlip()
+    successes.append(flag)
+    if flag:
+        print('Success')
+    else:
+        print('Failure')
 
 winrate = 100*sum(successes)/len(successes) #print win rate
-print('Win Rate: '+str(winrate)+'%')
+print('\n\nWin Rate: '+str(winrate)+'%')
