@@ -4,9 +4,21 @@ import numpy as np
 
 #define constants for board generation
 #probabilities chosen to have average of 25 points, with 12 voltorbs per board.
-probV = 0.48 #probability of voltorb tile
-prob3 = 0.08 #probability of three tile
-prob2 = 0.32 #probability of two tile
+#probabilities for level 8
+probV = 0.40 #probability of voltorb tile
+prob3 = 0.176 #probability of three tile
+prob2 = 0.176 #probability of two tile
+
+# #probabilities for level 4
+# probV = 0.368 #probability of voltorb tile
+# prob3 = 0.112 #probability of three tile
+# prob2 = 0.144 #probability of two tile
+
+# #probabilities for level 2
+# probV = 0.28 #probability of voltorb tile
+# prob3 = 0.08 #probability of three tile
+# prob2 = 0.12 #probability of two tile
+
 
 class gameBoard: #voltorb flip board class, generates a full game of voltorb flip
 
