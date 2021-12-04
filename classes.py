@@ -318,6 +318,8 @@ def FOM(game, labels): #calculate figure of merit matrix
     colVoltorbs = game.stats[3] #get number of voltorbs in columns
     rowFom = charRow/(1+rowVoltorbs) #calculate the figure of merit for each row
     colFom = charCol/(1+colVoltorbs) #calculate the figure of merit for each column
+    # rowFom = charRow / (1 )  # calculate the figure of merit for each row
+    # colFom = charCol / (1 )  # calculate the figure of merit for each column
     fomMat = np.round(np.outer(rowFom,colFom),2) #take the outer product of these two vectors to create a matrix
     #set all elements with known values to 0 FOM
     for i in range(0,5):

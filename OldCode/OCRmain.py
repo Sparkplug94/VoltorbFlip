@@ -4,7 +4,7 @@ import numpy as np
 import pytesseract
 from pytesseract import Output
 import matplotlib.pyplot as plt
-from OCRmethods import *
+from OldCode.OCRmethods import *
 import os
 import scipy
 from scipy import signal
@@ -16,6 +16,8 @@ IMG_DIR = '/Users/dylan/Desktop/'
 #list all files in directory
 filelist = os.listdir(IMG_DIR)
 imagelist = []
+print(filelist)
+print(os.getcwd())
 
 #find all images
 for file in filelist:
@@ -33,6 +35,8 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 #threshold
 cutoff = 100
 (T, thresh) = cv2.threshold(gray, cutoff, 255, cv2.THRESH_BINARY)
+# plt.imshow(thresh, cmap = 'gray')
+# plt.show()
 
 #right hand side box ROIs
 b1p = np.array([30, 280, 2365, 2610])
@@ -57,14 +61,18 @@ blist = []
 for bp in bplist:
     blist.append(cutout(bp,thresh))
 
+
 pointsList = []
 voltorbsList = []
-for image in tqdm(blist):
+for image in blist:
 
     #split image into points and voltorbs
     ptsImg = np.asarray(cv2.bitwise_not(image[0:100,70::]), dtype = float)
     voltorbsImg = np.asarray(cv2.bitwise_not(image[120:240,150::]), dtype = float)
-
+    # plt.imshow(ptsImg, cmap = 'gray')
+    # plt.show()
+    # plt.imshow(voltorbsImg, cmap = 'gray')
+    # plt.show()
 
     #load correlation kernels
     pKernels, pMaxs, vKernels, vMaxs = loadKernels()
@@ -76,7 +84,7 @@ for image in tqdm(blist):
         conv = signal.correlate2d(kernel, ptsImg)
         convmax = np.max(np.max(conv))
         corrNums.append(convmax/pMaxs[i])
-    #print(corrNums)
+    print(np.round(corrNums,3))
     #convolve against all voltorb kernels
     vNums = []
     for j, mykernel in enumerate(vKernels):
@@ -86,7 +94,7 @@ for image in tqdm(blist):
         conv = signal.correlate2d(kernel,voltorbsImg)
         convmax = np.max(np.max(conv))
         vNums.append(convmax/vMaxs[j])
-
+    print(vNums)
     ptsGuess = 2+np.argmax(corrNums)
     if np.abs(corrNums[1]-1) < 0.02:
         if np.abs(corrNums[6]-1) < 0.02:

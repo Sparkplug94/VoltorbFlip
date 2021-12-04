@@ -7,8 +7,8 @@ from matplotlib import pyplot as plt
 
 #load kernels
 def loadKernels():
-    ptsdir = 'DigitLibrary/PointsKernels/'
-    vtbsdir = 'DigitLibrary/VoltorbKernels/'
+    ptsdir = '/Users/dylan/Documents/PythonScratchPaper/VoltorbFlip/DigitLibrary/PointsKernels/'
+    vtbsdir = '/Users/dylan/Documents/PythonScratchPaper/VoltorbFlip/DigitLibrary/VoltorbKernels/'
 
     k2 = cv2.cvtColor(cv2.imread(ptsdir+'02.png'), cv2.COLOR_BGR2GRAY)
     k3 = cv2.cvtColor(cv2.imread(ptsdir+'03.png'), cv2.COLOR_BGR2GRAY)
@@ -41,7 +41,8 @@ def get_grayscale(image):
 def cutout(roi, img):
     cut = img[roi[0]:roi[1],roi[2]:roi[3]]
     cut[90::,0:165] = 255
-    return remove_noise(cut)
+    # return remove_noise(cut)
+    return cut
 
 # noise removal
 def remove_noise(image):
