@@ -12,24 +12,18 @@ def prettyPrint(map):
                 printline = printline + ' '
         print(printline)
 
-# stats = np.load('OCRstats.npy') #load stats from OCRmain
-rowPoints = np.array([3,6,4,9,4])
-rowVoltorbs = np.array([4,1,2,0,3])
-colPoints = np.array([6,2,7,5,6])
-colVoltorbs = np.array([2,3,2,2,1])
-stats = rowPoints, rowVoltorbs, colPoints, colVoltorbs
+stats = np.load('OCRstats.npy') #load stats from OCRmain
 
 game = importBoard(stats) #create game board using stats
 rowVoltorbs = stats[1]
 colVoltorbs = stats[3]
 
 # load data into game board
-tmp = np.asarray([['X', 'X', 'X', 'X', 'X'],
-                  ['X', 'X', 'X', 'X', '3'],
-                  ['X', 'X', 'X', 'X', 'X'],
-                  ['3', '1', '3', '1', '1'],
-                  ['X', 'X', 'X', 'X', 'X']],dtype=np.dtype('U100'))
-
+tmp = np.asarray([['X', 'X', 'X', '1', 'X'],
+                  ['X', 'X', 'X', '3', 'X'],
+                  ['X', 'X', 'X', '1', 'X'],
+                  ['X', 'X', 'X', '2', 'X'],
+                  ['X', 'X', 'X', '3', '2']],dtype=np.dtype('U100'))
 
 # tmp = np.asarray([['X', 'X', 'X', 'X', 'X'],
 #                   ['X', 'X', 'X', 'X', 'X'],
@@ -70,4 +64,4 @@ prettyPrint(fomMat)
 fomMax = np.max(np.max(fomMat))
 idxs = zip(*np.where(fomMat == fomMax))
 choice = list(idxs)[0]
-print('You should choose '+str(choice))
+print('\n You should choose '+str(choice))

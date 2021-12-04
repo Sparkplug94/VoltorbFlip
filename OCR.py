@@ -1,20 +1,19 @@
 from os import listdir
-
 from OCRMethods import *
 
 #path to image
-directory = '/Users/dylan/Desktop/VoltorbFlipBoards/'
+directory = '/Users/dylan/Desktop/'
 filelist = listdir(directory)
 pathlist = []
 for file in filelist:
-    pathlist.append(directory+file)
+    if file.endswith('.png'):
+        pathlist.append(directory+file)
 print(pathlist)
 
 #load digit library
 kernels = loadKernels()
 
-#select image from pathlist
-imgPath = pathlist[17]
+imgPath = pathlist[0]
 
 pts = [] #init pts array
 vtbs = [] #init voltorbs array
@@ -31,7 +30,7 @@ for i, img in enumerate(partitions): #for each partition, recognize digits
 stats = (pts[0:5],vtbs[0:5],pts[5::],vtbs[5::])
 print(stats)
 np.save('OCRstats',stats)
-imshow(loadImg(imgPath))
+# imshow(loadImg(imgPath))
 
 
 

@@ -557,3 +557,34 @@ def FOMProbabilistic(game, labels): #tries the probabilistic branching tree algo
         naive = 1
 
     return fomBoard, solved_boards_int, probabilityBoard, naive
+
+
+#The full function for playing a game of voltorb flip, with or without the branching tree solution algorithm
+def playVoltorbFlip(branching = 0): #play a game of voltorb flip, using the algorithm, and return success or failure
+    successFlag = 0 #set successflag
+    game = gameBoard() #create random gameboard
+    labels = labelBoard()  #create label board
+    voltorbCheck(game, labels)  # check for 0 voltorb rows and columns
+    charSumCheckAuto(game, labels)  # calculate characteristic sums of rows and columns
+
+    #THIS IS THE VOLTORB FLIP SOLUTION ALGORITHM
+    maxSteps = 25 #maximum number of steps for algorithm is number of tiles
+    for i in range(0,maxSteps):
+        charSumCheckAuto(game, labels)  # calculate characteristic sums
+        completeFlag = isComplete(game,labels) #check if game is complete
+        if completeFlag: #if it's complete, set successFlag to 1
+            successFlag = 1
+            break
+        if branching:
+            fom, _, _, naive = FOMProbabilistic(game, labels) #construct figure of merit matrix
+        else:
+            fom = FOM(game, labels) #construct figure of merit matrix
+        fomMax = np.max(np.max(fom)) #find maximum figure of merit
+        idxs = zip(*np.where(fom == fomMax)) #find indices of maximum figure of merits on board (can be multiple)
+        choice = list(idxs)[0] #choose the upper left one
+        result = revealElem(game,labels,choice[0],choice[1]) #reveal that element
+        if result == 0: #if you hit a voltorb
+            successFlag = 0 #you lose
+            break
+
+    return successFlag
