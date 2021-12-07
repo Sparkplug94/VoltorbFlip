@@ -1,30 +1,35 @@
 import numpy as np
+from random import choice
+from random import shuffle
 
 #THIS METHOD SHOULD ONLY BE USED IF THE GAMEBOimport numpy as np
 
-#define constants for board generation
-#probabilities chosen to have average of 25 points, with 12 voltorbs per board.
-#probabilities for level 8
-probV = 0.40 #probability of voltorb tile
-prob3 = 0.176 #probability of three tile
-prob2 = 0.176 #probability of two tile
+# #define constants for board generation
+# #probabilities chosen to have average of 25 points, with 12 voltorbs per board.
+# #probabilities for level 8
+# probV = 0.40 #probability of voltorb tile
+# prob3 = 0.176 #probability of three tile
+# prob2 = 0.176 #probability of two tile
 
 # #probabilities for level 4
 # probV = 0.368 #probability of voltorb tile
 # prob3 = 0.112 #probability of three tile
 # prob2 = 0.144 #probability of two tile
 
-# #probabilities for level 2
-# probV = 0.28 #probability of voltorb tile
-# prob3 = 0.08 #probability of three tile
-# prob2 = 0.12 #probability of two tile
+#probabilities for level 2
+probV = 0.28 #probability of voltorb tile
+prob3 = 0.08 #probability of three tile
+prob2 = 0.12 #probability of two tile
 
 
 class gameBoard: #voltorb flip board class, generates a full game of voltorb flip
 
-    def __init__(self):
+    def __init__(self, realBoard = 1):
         self.map = np.empty((5, 5)) #create the board map
-        self.makeRandomBoard() #generate a randomized, valid voltorb flip board
+        if realBoard:
+            self.makeRandomBoardSemiProb() #generate a level 2 board according to voltorb flip rules on bulbapedia
+        else:
+            self.makeRandomBoardProb() #generate a randomized, voltorb flip board probabilistically
 
     def select(self, probV = probV, prob2 = prob2, prob3 = prob3):  #encodes probability distribution for voltorbs, 3 tiles, and 2 tiles
         seed = np.random.rand(1)
@@ -37,11 +42,38 @@ class gameBoard: #voltorb flip board class, generates a full game of voltorb fli
         else:
             return 1
 
-    def makeRandomBoard(self): #generate random voltorb flip board
+    def makeRandomBoardProb(self): #generate random voltorb flip board
         for i, row in enumerate(self.map): #for each element
             for j, elem in enumerate(row):
                 self.map[i,j] = self.select() #choose an element according to the probability distribution
         self.calcstats() #calculate the relevant statistics (sum of points in row, sum of points in column, voltorbs in row, etc)
+
+    def makeRandomBoardSemiProb(self): #creates level 2 board according to bulbapedia rules
+        #the five possible board configs
+        v1 = (1,3,7)
+        v2 = (6,0,7)
+        v3 = (3,2,7)
+        v4 = (0,4,7)
+        v5 = (5,1,7)
+        vlist = (v1,v2,v3,v4,v5)
+        v = choice(vlist)
+        numVoltorbs = v[2]
+        num2s = v[0]
+        num3s = v[1]
+        tiles = []
+        for i in range(0,num2s):
+            tiles.append(2)
+        for j in range(0,num3s):
+            tiles.append(2)
+        for k in range(0,numVoltorbs):
+            tiles.append(0)
+        for m in range(0,25-len(tiles)):
+            tiles.append(1)
+        #shuffle the list
+        shuffle(tiles)
+        self.map = np.reshape(tiles, (5,5))
+        self.calcstats()
+
 
     def calcstats(self): #calculates total points and voltorbs in each row and column
         rowPoints = np.sum(self.map,axis=1,dtype=int)
@@ -114,6 +146,19 @@ class labelBoard: #class for containing possible values of gameBoard. tiles cont
                 for k in range(0,totalLen-len(elem)):
                     printline = printline + ' '
             print(printline)
+
+    def calcKnownElems(self):
+        knownRowElems = np.array([0, 0, 0, 0, 0])
+        knownColElems = np.array([0, 0, 0, 0, 0])
+        for i, row in enumerate(self.map):
+            for j in range(0,5):
+                if len(row[j]) == 1:
+                    knownRowElems[i] += 1
+        for i, col in enumerate(self.map.transpose()):
+            for j in range(0,5):
+                if len(row[j]) == 1:
+                    knownColElems[i] += 1
+        return knownRowElems, knownColElems
 
 #standalone functions
 def possibilities(charSum): #take characteristic sum of a row, Σ+V-5, return possibilities for (# 2 tiles, # 3 tiles)
@@ -316,10 +361,8 @@ def FOM(game, labels): #calculate figure of merit matrix
     charRow, charCol = charSumCheckAuto(game, labels) #find characteristic sum of rows and columns
     rowVoltorbs = game.stats[1] #get number of voltorbs in rows
     colVoltorbs = game.stats[3] #get number of voltorbs in columns
-    rowFom = charRow/(1+rowVoltorbs) #calculate the figure of merit for each row
-    colFom = charCol/(1+colVoltorbs) #calculate the figure of merit for each column
-    # rowFom = charRow / (1 )  # calculate the figure of merit for each row
-    # colFom = charCol / (1 )  # calculate the figure of merit for each column
+    rowFom = charRow / (1 + rowVoltorbs)  # calculate the figure of merit for each row
+    colFom = charCol / (1 + colVoltorbs)  # calculate the figure of merit for each column
     fomMat = np.round(np.outer(rowFom,colFom),2) #take the outer product of these two vectors to create a matrix
     #set all elements with known values to 0 FOM
     for i in range(0,5):
@@ -558,11 +601,38 @@ def FOMProbabilistic(game, labels): #tries the probabilistic branching tree algo
 
     return fomBoard, solved_boards_int, probabilityBoard, naive
 
+def FOMMinVoltorbsProbabilistic(game, labels): #Picks the square with the minimum probability of being a voltorb, using branching tree algorith to find probabilities
+    stats = game.stats
+    try:
+        # print('\nTrying to construct all boards')
+        solved_boards = branchBoards(stats, labels, [])
+        solved_boards_int = integerizeBoards(solved_boards)
+        probabilityBoard = tileProbabilities(solved_boards_int)
+        # print('\nRemaining Boards: ' + str(len(solved_boards_int)))
+        for i, board in enumerate(solved_boards_int):
+            checksum = np.sum(np.asarray(stats) - np.asarray(board.stats))
+            if not checksum == 0:
+                print('THIS BOARD IS INVALID (SOMEHOW)')
+        fomBoard = 1 / (0.01 + probabilityBoard[:, :, 0])
+        # set all elements with known values to 0 FOM
+        for i in range(0, 5):
+            for j in range(0, 5):
+                if len(labels.map[i, j]) == 1:
+                    fomBoard[i, j] = 0
+        naive = 0
+    except RecursionError:
+        print('Recursion Depth Exceeded, using Naive Algorithm')
+        fomBoard = FOM(game,labels)
+        solved_boards_int = 0
+        probabilityBoard = 0
+        naive = 1
+
+    return fomBoard, solved_boards_int, probabilityBoard, naive
 
 #The full function for playing a game of voltorb flip, with or without the branching tree solution algorithm
-def playVoltorbFlip(branching = 0): #play a game of voltorb flip, using the algorithm, and return success or failure
+def playVoltorbFlip(branching = 0, realBoard = 0): #play a game of voltorb flip, using the algorithm, and return success or failure
     successFlag = 0 #set successflag
-    game = gameBoard() #create random gameboard
+    game = gameBoard(realBoard=realBoard) #create random gameboard
     labels = labelBoard()  #create label board
     voltorbCheck(game, labels)  # check for 0 voltorb rows and columns
     charSumCheckAuto(game, labels)  # calculate characteristic sums of rows and columns
@@ -570,19 +640,23 @@ def playVoltorbFlip(branching = 0): #play a game of voltorb flip, using the algo
     #THIS IS THE VOLTORB FLIP SOLUTION ALGORITHM
     maxSteps = 25 #maximum number of steps for algorithm is number of tiles
     for i in range(0,maxSteps):
+
         charSumCheckAuto(game, labels)  # calculate characteristic sums
+
         completeFlag = isComplete(game,labels) #check if game is complete
         if completeFlag: #if it's complete, set successFlag to 1
             successFlag = 1
             break
         if branching:
             fom, _, _, naive = FOMProbabilistic(game, labels) #construct figure of merit matrix
+
         else:
             fom = FOM(game, labels) #construct figure of merit matrix
         fomMax = np.max(np.max(fom)) #find maximum figure of merit
         idxs = zip(*np.where(fom == fomMax)) #find indices of maximum figure of merits on board (can be multiple)
         choice = list(idxs)[0] #choose the upper left one
         result = revealElem(game,labels,choice[0],choice[1]) #reveal that element
+
         if result == 0: #if you hit a voltorb
             successFlag = 0 #you lose
             break

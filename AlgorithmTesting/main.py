@@ -7,7 +7,7 @@ from tqdm import tqdm
 import sys
 
 #set the recursion limit to 5k
-sys.setrecursionlimit(5000)
+sys.setrecursionlimit(3000)
 
 def prettyPrint(map):
     totalLen = 5
@@ -21,11 +21,12 @@ def prettyPrint(map):
         print(printline)
 
 successes = []
-trials = 500
+trials = 100
 branching = 1
+realLevel2Board = 0
 
 for i in tqdm(range(0,trials)): #run X trials of voltorb flip
-    flag = playVoltorbFlip(branching = branching)
+    flag = playVoltorbFlip(branching = branching, realBoard = realLevel2Board)
     successes.append(flag)
 
 winrate = 100*sum(successes)/len(successes) #print win rate

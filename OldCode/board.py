@@ -56,6 +56,10 @@ for i in range(0,5):
 
 print('\n Board')
 labels.prettyPrint()
+print('Row Points: '+str(stats[0]))
+print('Row Voltorbs: '+str(stats[1]))
+print('Row Points: '+str(stats[2]))
+print('Row Points: '+str(stats[3]))
 
 print('\n FoM Matrix')
 prettyPrint(fomMat)
